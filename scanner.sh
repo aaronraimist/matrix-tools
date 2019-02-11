@@ -6,7 +6,7 @@ n="$( wc -l "$f" | awk '{ print $1 }' )"
 s="$( echo "$n / $c + 10" | bc )"
 t='/tmp/matrix-scanner-'
 
-rm -f "$t*"
+rm -f "$t"*
 
 split -l "$s" "$f" "$t"
 
