@@ -9,7 +9,7 @@ __report() {
     echo "$total homeservers online"
     echo "$wellk use .well-known, $srvre srv record"
     echo
-    
+
     sqlite3 scanner.db \
     'select
         distinct( software ) as v,
@@ -24,4 +24,29 @@ __report() {
     | column -t -s '|'
 }
 
-__report > report.txt
+__report > output/report.txt
+
+
+__reportcsv() {
+
+echo
+
+sqlite3 -header -csv scanner.db \
+'SELECT
+    DISTINCT software,
+    COUNT() as count
+FROM
+    scanner
+ORDER BY count asc' \
+| awk -F'|' '{print $2"|"$1}' \
+| column -t -s '|'
+
+}
+
+__reportcsv > output/report.csv
+
+
+scp output/report.txt michael@104.200.28.247:~/versions/mxversions.txt
+scp output/report.csv michael@104.200.28.247:~/versions/mxversions.csv
+
+ssh -t michael@104.200.28.247 "sudo mv ~/versions/* /var/www/raim.ist/matrix/"
